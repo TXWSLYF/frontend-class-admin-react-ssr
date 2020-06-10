@@ -2,12 +2,15 @@ import css from './index.module.scss';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { login } from '../../api/auth';
+import Router from 'next/router';
+import { menuList } from '../../common/constant';
 
 export default function LoginForm() {
     const onFinish = async (value: ILoginData) => {
         const { name, password } = value;
         console.log(name, password);
         await login({ name, password });
+        Router.replace(menuList[0].children[0].path);
     };
 
     return (
