@@ -76,3 +76,11 @@ interface IPaginationData {
     // 当前页码
     currentPage: number;
 }
+
+// 优惠券
+interface ICouponItem {
+    id: number;
+    title: string;
+    denomination: number;
+    goodId: number;
+}

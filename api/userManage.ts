@@ -10,3 +10,9 @@ export const getWholeCourseList = () => fetch.get<Array<ICourseItem>>('/wholeCou
  */
 export const getUserInfo = (data: IViewUserInfoReqData) =>
     fetch.post<IViewUserInfoResData>('/admin/viewUserInfo', data);
+
+/**
+ * @description 修改学员信息
+ */
+export const editUserInfo = (data: { name: string; nickname?: string; remark?: string }) =>
+    fetch.post('/admin/user', data);

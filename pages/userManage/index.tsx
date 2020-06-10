@@ -1,11 +1,12 @@
 import css from './index.module.scss';
 import AdminPage from '../../components/AdminPage';
-import { Form, Input, Button, DatePicker, Select, Table, Tag, Pagination } from 'antd';
+import { Form, Input, Button, DatePicker, Select, Table, Tag, Pagination, Modal } from 'antd';
 import { useState, useEffect } from 'react';
-import { getWholeCourseList, getUserInfo } from '../../api/userManage';
+import { getWholeCourseList, getUserInfo, editUserInfo } from '../../api/userManage';
 import { USER_COUPON_STATUSES, getCouponStatusName } from '../../common/constant';
 import { GetServerSidePropsContext } from 'next';
 import Axios from 'axios';
+import { getCouponList, userAddCoupon } from '../../api/coupon';
 
 const { Option } = Select;
 
@@ -22,10 +23,16 @@ type searchFormData = {
 
 export default function UserManage() {
     const [form] = Form.useForm();
+    const [couponForm] = Form.useForm();
+    const [editForm] = Form.useForm();
 
     const [courseList, setCourseList] = useState<Array<ICourseItem>>([]);
     const [userInfoData, setUserInfoData] = useState<Array<IViewUserInfoResDataItem>>([]);
     const [paginationData, setPaginationData] = useState<IPaginationData>({ total: 0, currentPage: 1, pageSize: 20 });
+    const [couponList, setCouponList] = useState<Array<ICouponItem>>([]);
+    const [couponModalVisible, setCouponModalVisible] = useState(false);
+    const [selectedUserInfo, setSelectedUserInfo] = useState<IViewUserInfoResDataItem>();
+    const [editModalVisible, setEditModalVisible] = useState(false);
 
     const USER_COUPON_STATUS_COLOR = {
         [USER_COUPON_STATUSES.USED.value]: 'red',
@@ -130,10 +137,27 @@ export default function UserManage() {
             title: '操作',
             key: 'action',
             // eslint-disable-next-line react/display-name
-            render: () => (
+            render: (record) => (
                 <div>
-                    <Button type="link">编辑</Button>
-                    <Button type="link">优惠券</Button>
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            setEditModalVisible(true);
+                            setSelectedUserInfo(record);
+                            editForm.setFieldsValue(record);
+                        }}
+                    >
+                        编辑
+                    </Button>
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            setCouponModalVisible(true);
+                            setSelectedUserInfo(record);
+                        }}
+                    >
+                        优惠券
+                    </Button>
                 </div>
             ),
         },
@@ -192,6 +216,8 @@ export default function UserManage() {
             const courseList = await getWholeCourseList();
             setCourseList(courseList);
             form.submit();
+            const couponList = await getCouponList();
+            setCouponList(couponList);
         })();
     }, []);
 
@@ -200,6 +226,77 @@ export default function UserManage() {
     return (
         <AdminPage>
             <div className={css['user-manage']}>
+                <Modal
+                    closable={false}
+                    visible={editModalVisible}
+                    maskClosable
+                    onOk={() => {
+                        editForm.submit();
+                    }}
+                    onCancel={() => {
+                        setEditModalVisible(false);
+                    }}
+                >
+                    <Form
+                        form={editForm}
+                        onFinish={async (data) => {
+                            console.log('finish');
+                            const { name } = selectedUserInfo;
+                            await editUserInfo({ ...data, name });
+                            window.location.reload();
+                        }}
+                    >
+                        <Form.Item name="remark" label="备注" className={css['ant-form-item']}>
+                            <Input placeholder="请输入备注" />
+                        </Form.Item>
+                        <Form.Item name="nickname" label="昵称" className={css['ant-form-item']}>
+                            <Input placeholder="请输入昵称" />
+                        </Form.Item>
+                        <Form.Item name="name" label="账号" className={css['ant-form-item']}>
+                            <Input disabled />
+                        </Form.Item>
+                    </Form>
+                </Modal>
+                <Modal
+                    closable={false}
+                    visible={couponModalVisible}
+                    maskClosable
+                    onOk={() => {
+                        couponForm.submit();
+                    }}
+                    onCancel={() => {
+                        couponForm.resetFields();
+                        setCouponModalVisible(false);
+                    }}
+                >
+                    <Form
+                        form={couponForm}
+                        onFinish={async (data) => {
+                            const { couponId } = data;
+                            const { name } = selectedUserInfo;
+                            await userAddCoupon({ userName: name, couponId });
+                            // todo:优化
+                            window.location.reload();
+                        }}
+                    >
+                        <Form.Item
+                            name="couponId"
+                            label="优惠券"
+                            className={css['ant-form-item']}
+                            rules={[{ required: true, message: '请选择优惠券' }]}
+                        >
+                            <Select style={{ width: '300px' }}>
+                                {couponList.map((coupon) => {
+                                    return (
+                                        <Option key={coupon.id} value={coupon.id}>
+                                            {coupon.title}
+                                        </Option>
+                                    );
+                                })}
+                            </Select>
+                        </Form.Item>
+                    </Form>
+                </Modal>
                 <Form layout="inline" form={form} onFinish={onFinish}>
                     <Form.Item name="nickname" label="昵称" className={css['ant-form-item']}>
                         <Input placeholder="请输入昵称" onChange={handleChange} />
