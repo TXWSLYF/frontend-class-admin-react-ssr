@@ -56,7 +56,7 @@ const GoodDetail = (props: {
             return;
         }
 
-        window.WeixinJSBridge.invoke('getBrandWCPayRequest', orderInfoRes.data.payParams, (res) => {
+        window.WeixinJSBridge.invoke('getBrandWCPayRequest', orderInfoRes.payParams, (res) => {
             if (res.err_msg === 'get_brand_wcpay_request:ok') {
                 // 轮询次数
                 let intervalCount = 0;

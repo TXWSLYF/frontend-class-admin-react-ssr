@@ -1,3 +1,7 @@
+interface Window {
+    WeixinJSBridge: any;
+}
+
 interface ILoginData {
     name: string;
     password: string;
