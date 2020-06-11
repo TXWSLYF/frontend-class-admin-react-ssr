@@ -7,6 +7,7 @@ import { USER_COUPON_STATUSES, getCouponStatusName } from '../../common/constant
 import { GetServerSidePropsContext } from 'next';
 import { getCouponList, userAddCoupon } from '../../api/coupon';
 import fetchServer from '../../util/fetchServer';
+import Head from 'next/head';
 
 const { Option } = Select;
 
@@ -226,6 +227,9 @@ export default function UserManage() {
     return (
         <AdminPage>
             <div className={css['user-manage']}>
+                <Head>
+                    <link href="//cdn.jsdelivr.net/npm/antd@4.3.2/dist/antd.min.css" rel="stylesheet"></link>
+                </Head>
                 <Modal
                     closable={false}
                     visible={editModalVisible}
