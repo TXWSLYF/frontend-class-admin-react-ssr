@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 import { getWholeCourseList, getUserInfo, editUserInfo } from '../../api/userManage';
 import { USER_COUPON_STATUSES, getCouponStatusName } from '../../common/constant';
 import { GetServerSidePropsContext } from 'next';
-import Axios from 'axios';
 import { getCouponList, userAddCoupon } from '../../api/coupon';
+import fetchServer from '../../util/fetchServer';
 
 const { Option } = Select;
 
@@ -352,14 +352,9 @@ export default function UserManage() {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     try {
-        const currentUserInfo = await Axios.get('http://127.0.0.1:7001/admin/user', {
-            headers: context.req ? { cookie: context.req.headers.cookie } : undefined,
+        await fetchServer.get('/admin/user', {
+            headers: context.req.headers,
         });
-
-        const { errorCode, msg } = currentUserInfo.data;
-        if (errorCode !== 0) {
-            throw new Error(msg);
-        }
     } catch (error) {
         context.res.statusCode = 302;
         context.res.setHeader('location', '/login');
