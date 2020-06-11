@@ -128,15 +128,16 @@ const GoodDetail = (props: {
                 </div>
 
                 <div className={css['agreement']}>
-                    <input
-                        v-if="!isPurchased"
-                        id="agreement-checkbox"
-                        checked={isAgreement}
-                        onChange={(e) => {
-                            setIsAgreement(e.target.checked);
-                        }}
-                        type="checkbox"
-                    />
+                    {!isPurchasedGood && (
+                        <input
+                            id="agreement-checkbox"
+                            checked={isAgreement}
+                            onChange={(e) => {
+                                setIsAgreement(e.target.checked);
+                            }}
+                            type="checkbox"
+                        />
+                    )}
                     <label htmlFor="agreement-checkbox" />
                     已阅读并同意
                     <a
@@ -161,7 +162,7 @@ const GoodDetail = (props: {
                             </div>
                             <div className={css['price-container--original']}>
                                 <p>限时优惠</p>
-                                <p>原价 {originPrice / 100}</p>
+                                <p style={{ margin: '0' }}> 原价 {originPrice / 100}</p>
                             </div>
                         </div>
                         <div className={css['signup-btn-container']}>
@@ -254,6 +255,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         ]);
         return { props: { userInfo, goodInfo, isPurchasedGood, userCouponInfo } };
     } catch (error) {
+        // TODO: 直接nextjs层拼接微信跳转链接
         ctx.res.statusCode = 302;
         ctx.res.setHeader('location', `${WECHAT_LOGIN_URL}?redirect_url=${encodeURIComponent(href)}`);
         ctx.res.end();
