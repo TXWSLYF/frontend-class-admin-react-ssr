@@ -1,0 +1,72 @@
+.agreement-model {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+
+    .text-focus {
+        font-weight: bolder;
+    }
+
+    &--mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: black;
+        opacity: 0.7;
+    }
+
+    &--content {
+        margin: auto;
+        overflow: auto;
+        position: absolute;
+        width: 80vw;
+        height: 60vh;
+        top: 10vh;
+        left: 10vw;
+        border-radius: 4vw;
+        background: white;
+        padding: 5vw;
+        box-sizing: border-box;
+
+        h2 {
+            text-align: center;
+            font-size: 5vw;
+            font-weight: bolder;
+            margin-bottom: 4vw;
+        }
+
+        ul {
+            font-size: 3.5vw;
+            line-height: 5vw;
+            list-style: none;
+            padding: 0;
+
+            li {
+                margin-bottom: 2vw;
+            }
+
+            .text-focus {
+                font-weight: bolder;
+            }
+        }
+    }
+
+    &--icon {
+        position: absolute;
+        top: 73vh;
+        left: 45vw;
+        width: 10vw;
+        height: 10vw;
+
+        img {
+            width: 10vw;
+            height: 10vw;
+        }
+    }
+}

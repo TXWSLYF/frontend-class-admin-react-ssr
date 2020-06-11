@@ -1,13 +1,5 @@
 import axios from 'axios';
 
-// interface ICommonResponse {
-//     errorCode: number;
-//     msg: string;
-//     data: {
-//         [key: string]: any;
-//     };
-// }
-
 const fetch = axios.create({
     baseURL: '/api',
     withCredentials: true,

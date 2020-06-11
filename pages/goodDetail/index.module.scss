@@ -1,0 +1,179 @@
+.good-detail {
+    overflow: auto;
+    background: #f4f3f9;
+
+    img {
+        width: 100%;
+    }
+
+    .faq {
+        margin: 4vw 4vw;
+
+        &-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 5vw;
+            margin-bottom: 4vw;
+        }
+
+        &-item {
+            margin-bottom: 4vw;
+
+            .text-focus {
+                font-weight: bolder;
+            }
+
+            &--q {
+                font-size: 4vw;
+                font-weight: bold;
+                margin-bottom: 2vw;
+            }
+
+            &--a {
+                font-size: 3.5vw;
+                line-height: 5vw;
+            }
+        }
+    }
+
+    .agreement {
+        font-size: 3vw;
+        margin: 4vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        a {
+            color: #9c27af;
+        }
+    }
+
+    > footer {
+        position: fixed;
+        width: 100vw;
+        bottom: 0;
+        background: white;
+
+        .unpurchased-container {
+            padding: 2vw 0;
+            display: flex;
+        }
+
+        .purchased-container {
+            display: block;
+            padding: 3vw 0;
+            color: white;
+            background-image: linear-gradient(-60deg, #ff5858 0%, #f09819 100%);
+
+            > div {
+                text-align: center;
+
+                &:first-child {
+                    font-weight: 400;
+                    font-size: 5vw;
+                }
+
+                &:last-child {
+                    margin-top: 10px;
+                    font-size: 3.5vw;
+                }
+            }
+        }
+
+        .price-container {
+            display: flex;
+            flex-basis: 50%;
+            flex-shrink: 0;
+
+            &--preferential {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 8vw;
+                font-weight: 700;
+                flex-basis: 50%;
+                flex-shrink: 0;
+
+                > div {
+                    display: flex;
+                    justify-content: center;
+                }
+
+                .yuan {
+                    padding-top: 1.98vw;
+                    font-weight: 300;
+                    font-size: 5vw;
+                    margin-right: 0.3vw;
+                }
+
+                span {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+
+            &--original {
+                text-align: center;
+                flex-basis: 50%;
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                p {
+                    &:first-child {
+                        background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
+                        color: white;
+                        font-size: 2vw;
+                        padding: 1vw 0;
+                        border-radius: 1vw;
+                        margin-bottom: 0.5vw;
+                    }
+
+                    &:last-child {
+                        color: #bfbfbf;
+                        font-size: 3.5vw;
+                        text-decoration: line-through;
+                    }
+                }
+            }
+        }
+
+        .signup-btn-container {
+            display: flex;
+            flex-basis: 50%;
+            flex-shrink: 0;
+            padding: 0 5vw;
+
+            > div {
+                padding: 4vw 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                text-align: center;
+                border-radius: 1vw;
+                color: white;
+                font-size: 5vw;
+                font-weight: 400;
+                letter-spacing: 0.2vw;
+                background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);
+            }
+
+            .disabled {
+                opacity: 0.5;
+                pointer-events: none;
+            }
+        }
+
+        .agreement-tip {
+            height: 10vw;
+            line-height: 10vw;
+            font-size: 4vw;
+            text-align: center;
+            color: white;
+            background-color: #f44336;
+        }
+    }
+}

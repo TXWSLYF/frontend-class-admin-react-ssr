@@ -7,6 +7,7 @@ interface IUserInfo {
     authorities: { readonly [key: string]: string };
     avatar: string;
     nickname: string;
+    name: string;
 }
 
 interface ICourseItem {
@@ -78,9 +79,18 @@ interface IPaginationData {
 }
 
 // 优惠券
-interface ICouponItem {
+interface ICouponInfo {
     id: number;
     title: string;
     denomination: number;
     goodId: number;
+}
+
+interface IGoodInfo {
+    name: string;
+    price: number;
+    detail: string;
+    pcPoster: string;
+    h5Poster: string;
+    originPrice: number;
 }

@@ -30,7 +30,7 @@ export default function UserManage() {
     const [courseList, setCourseList] = useState<Array<ICourseItem>>([]);
     const [userInfoData, setUserInfoData] = useState<Array<IViewUserInfoResDataItem>>([]);
     const [paginationData, setPaginationData] = useState<IPaginationData>({ total: 0, currentPage: 1, pageSize: 20 });
-    const [couponList, setCouponList] = useState<Array<ICouponItem>>([]);
+    const [couponList, setCouponList] = useState<Array<ICouponInfo>>([]);
     const [couponModalVisible, setCouponModalVisible] = useState(false);
     const [selectedUserInfo, setSelectedUserInfo] = useState<IViewUserInfoResDataItem>();
     const [editModalVisible, setEditModalVisible] = useState(false);
