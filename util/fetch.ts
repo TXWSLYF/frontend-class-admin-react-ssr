@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { message } from 'antd';
 
 const fetch = axios.create({
     baseURL: '/api',
@@ -19,8 +20,7 @@ fetch.interceptors.response.use(
         const { errorCode, msg, data } = response.data;
 
         if (errorCode !== 0) {
-            // TODO:统一的错误提示
-            // Message.error(msg);
+            message.error(msg);
 
             return Promise.reject(new Error(msg));
         }

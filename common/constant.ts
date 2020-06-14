@@ -1,5 +1,23 @@
 import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
 
+const getStatusName = (
+    data: {
+        [key: string]: {
+            name: string;
+            value: number;
+        };
+    },
+    status: number,
+) => {
+    const keys = Object.keys(data);
+
+    for (let i = 0; i < keys.length; i += 1) {
+        if (data[keys[i]].value === status) {
+            return data[keys[i]].name;
+        }
+    }
+};
+
 // 菜单列表
 export const menuList = [
     {
@@ -49,12 +67,23 @@ export const USER_COUPON_STATUSES = {
 };
 
 // 获取优惠券状态名称
-export function getCouponStatusName(status: number): string {
-    const keys = Object.keys(USER_COUPON_STATUSES);
+export function getuserCouponStatusName(status: number) {
+    return getStatusName(USER_COUPON_STATUSES, status);
+}
 
-    for (let i = 0; i < keys.length; i += 1) {
-        if (USER_COUPON_STATUSES[keys[i]].value === status) {
-            return USER_COUPON_STATUSES[keys[i]].name;
-        }
-    }
+// 用户课程状态
+export const USER_COURSE_STATUSES = {
+    UN_ACTIVE: {
+        name: '未激活',
+        value: 0,
+    },
+    ACTIVE: {
+        name: '激活的',
+        value: 1,
+    },
+};
+
+// 获取优惠券状态名称
+export function getuserCourseStatusName(status: number) {
+    return getStatusName(USER_COURSE_STATUSES, status);
 }

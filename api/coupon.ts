@@ -9,7 +9,8 @@ export const getCouponList = () => fetch.get<Array<ICouponInfo>>('/admin/couponL
  * @description 用户添加优惠券
  */
 
-export const userAddCoupon = (data: { userName: string; couponId: number }) => fetch.post('/admin/userCoupon', data);
+export const userAddCoupon = (data: { userName: string; couponId: number }) =>
+    fetch.post<IUserCoupon>('/admin/userCoupon', data);
 
 export const USER_COUPON_INFO_URL = '/userCoupon';
 

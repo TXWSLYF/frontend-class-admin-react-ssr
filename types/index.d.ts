@@ -50,9 +50,11 @@ interface IViewUserInfoResDataItem {
     }[];
     userCourses: {
         startAt: null | string;
+        status: number;
         createdAt: string;
         courseInfo: {
             name: string;
+            hash: string;
         };
     }[];
     userCoupons: {
@@ -62,6 +64,13 @@ interface IViewUserInfoResDataItem {
             title: string;
         };
     }[];
+}
+
+interface IUserCoupon {
+    couponId: string;
+    id: number;
+    status: number;
+    userName: string;
 }
 
 // 查询用户信息接口返回数据

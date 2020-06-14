@@ -1,13 +1,20 @@
 import css from './index.module.scss';
 import AdminPage from '../../components/AdminPage';
-import { Form, Input, Button, DatePicker, Select, Table, Tag, Pagination, Modal } from 'antd';
+import { Form, Input, Button, DatePicker, Select, Table, Tag, Pagination, Modal, Radio, message } from 'antd';
 import { useState, useEffect } from 'react';
 import { getWholeCourseList, getUserInfo, editUserInfo } from '../../api/userManage';
-import { USER_COUPON_STATUSES, getCouponStatusName } from '../../common/constant';
+import {
+    USER_COUPON_STATUSES,
+    getuserCouponStatusName,
+    USER_COURSE_STATUSES,
+    getuserCourseStatusName,
+} from '../../common/constant';
 import { GetServerSidePropsContext } from 'next';
 import { getCouponList, userAddCoupon } from '../../api/coupon';
 import fetchServer from '../../util/fetchServer';
 import Head from 'next/head';
+import { addUserCourse, editUserCourse } from '../../api/userCourse';
+import moment from 'moment';
 
 const { Option } = Select;
 
@@ -26,6 +33,7 @@ export default function UserManage() {
     const [form] = Form.useForm();
     const [couponForm] = Form.useForm();
     const [editForm] = Form.useForm();
+    const [userCourseForm] = Form.useForm();
 
     const [courseList, setCourseList] = useState<Array<ICourseItem>>([]);
     const [userInfoData, setUserInfoData] = useState<Array<IViewUserInfoResDataItem>>([]);
@@ -34,10 +42,19 @@ export default function UserManage() {
     const [couponModalVisible, setCouponModalVisible] = useState(false);
     const [selectedUserInfo, setSelectedUserInfo] = useState<IViewUserInfoResDataItem>();
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const [userCourseFormData, setUserCourseFormData] = useState<{ type: 'EDIT' | 'ADD'; modalVisible: boolean }>({
+        type: 'EDIT',
+        modalVisible: false,
+    });
 
     const USER_COUPON_STATUS_COLOR = {
         [USER_COUPON_STATUSES.USED.value]: 'red',
         [USER_COUPON_STATUSES.UN_USED.value]: 'green',
+    };
+
+    const USER_COURSE_STATUS_COLOR = {
+        [USER_COURSE_STATUSES.UN_ACTIVE.value]: 'red',
+        [USER_COURSE_STATUSES.ACTIVE.value]: 'green',
     };
 
     // 表单结构
@@ -60,16 +77,52 @@ export default function UserManage() {
             title: '报名情况',
             dataIndex: 'userCourses',
             key: 'userCourses',
-            render: (userCourses: IViewUserInfoResDataItem['userCourses']) => {
-                return userCourses.map((userCourse) => {
-                    return (
-                        <Tag key={userCourse.courseInfo.name} color="geekblue" style={{ textAlign: 'center' }}>
-                            {userCourse.courseInfo.name}
-                            <br />
-                            {new Date(userCourse.createdAt).toLocaleString()}
-                        </Tag>
-                    );
-                });
+            // eslint-disable-next-line react/display-name
+            render: (userCourses: IViewUserInfoResDataItem['userCourses'], record) => {
+                return (
+                    <div>
+                        {userCourses.map((userCourse) => {
+                            const {
+                                courseInfo: { name, hash },
+                                status,
+                                createdAt,
+                                startAt,
+                            } = userCourse;
+                            return (
+                                <Tag
+                                    key={name}
+                                    color={USER_COURSE_STATUS_COLOR[status]}
+                                    style={{ textAlign: 'center', cursor: 'pointer' }}
+                                    onClick={() => {
+                                        setSelectedUserInfo(record);
+                                        setUserCourseFormData({ modalVisible: true, type: 'EDIT' });
+                                        userCourseForm.setFieldsValue({
+                                            courseHashs: [hash],
+                                            status,
+                                            startAt: startAt ? moment(startAt) : undefined,
+                                        });
+                                    }}
+                                >
+                                    {name}：{getuserCourseStatusName(status)}
+                                    <br />
+                                    报名时间：{new Date(createdAt).toLocaleString()}
+                                    <br />
+                                    开课时间：
+                                    {startAt ? new Date(startAt).toLocaleString() : '无'}
+                                </Tag>
+                            );
+                        })}
+                        <Button
+                            type="link"
+                            onClick={() => {
+                                setUserCourseFormData({ modalVisible: true, type: 'ADD' });
+                                setSelectedUserInfo(record);
+                            }}
+                        >
+                            添加课程
+                        </Button>
+                    </div>
+                );
             },
         },
         {
@@ -119,7 +172,7 @@ export default function UserManage() {
                     } = coupon;
                     return (
                         <Tag key={id} color={USER_COUPON_STATUS_COLOR[status]}>
-                            {title}：{getCouponStatusName(status)}
+                            {title}：{getuserCouponStatusName(status)}
                         </Tag>
                     );
                 });
@@ -168,7 +221,6 @@ export default function UserManage() {
     const onFinish = async (values: searchFormData) => {
         const { nickname = '', date, remark = '', courseHashs } = values;
         const { currentPage, pageSize } = paginationData;
-        console.log(paginationData);
 
         const viewUserInfoReqData: IViewUserInfoReqData = {
             nickname,
@@ -244,10 +296,16 @@ export default function UserManage() {
                     <Form
                         form={editForm}
                         onFinish={async (data) => {
-                            console.log('finish');
                             const { name } = selectedUserInfo;
                             await editUserInfo({ ...data, name });
-                            window.location.reload();
+
+                            const index = userInfoData.findIndex((i) => i.name === name);
+                            userInfoData[index].nickname = data.nickname;
+                            userInfoData[index].remark = data.remark;
+
+                            setUserInfoData([...userInfoData]);
+                            message.success('修改成功');
+                            setEditModalVisible(false);
                         }}
                     >
                         <Form.Item name="remark" label="备注" className={css['ant-form-item']}>
@@ -278,9 +336,21 @@ export default function UserManage() {
                         onFinish={async (data) => {
                             const { couponId } = data;
                             const { name } = selectedUserInfo;
-                            await userAddCoupon({ userName: name, couponId });
-                            // todo:优化
-                            window.location.reload();
+                            const userCoupon = await userAddCoupon({ userName: name, couponId });
+
+                            const index = userInfoData.findIndex((userInfo) => userInfo.name === name);
+                            userInfoData[index].userCoupons.push({
+                                id: userCoupon.id,
+                                status: userCoupon.status,
+                                couponInfo: {
+                                    title: couponList.find((coupon) => coupon.id === couponId).title,
+                                },
+                            });
+
+                            setUserInfoData([...userInfoData]);
+                            message.success('添加优惠券成功');
+                            setCouponModalVisible(false);
+                            couponForm.resetFields();
                         }}
                     >
                         <Form.Item
@@ -298,6 +368,112 @@ export default function UserManage() {
                                     );
                                 })}
                             </Select>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+                <Modal
+                    closable={false}
+                    visible={userCourseFormData.modalVisible}
+                    maskClosable
+                    onOk={() => {
+                        userCourseForm.submit();
+                    }}
+                    onCancel={() => {
+                        userCourseForm.resetFields();
+                        setUserCourseFormData({ ...userCourseFormData, modalVisible: false });
+                    }}
+                >
+                    <Form
+                        form={userCourseForm}
+                        onFinish={async (data) => {
+                            const { courseHashs, status, startAt } = data;
+                            const { type } = userCourseFormData;
+                            const { name } = selectedUserInfo;
+
+                            if (type === 'ADD') {
+                                await addUserCourse({
+                                    courseHashs,
+                                    status,
+                                    userNames: [name],
+                                    startAt: startAt ? new Date(startAt.format()).getTime() : null,
+                                });
+
+                                const index = userInfoData.findIndex((userInfo) => userInfo.name === name);
+                                userInfoData[index].userCourses.push(
+                                    ...courseHashs.map((hash) => {
+                                        return {
+                                            startAt: startAt ? startAt.format() : null,
+                                            status,
+                                            createdAt: new Date().toString(),
+                                            courseInfo: {
+                                                name: courseList.find((course) => course.hash === hash).name,
+                                            },
+                                        };
+                                    }),
+                                );
+                                setUserInfoData([...userInfoData]);
+                                message.success('开通成功');
+                            } else if (type === 'EDIT') {
+                                await editUserCourse({
+                                    courseHashs,
+                                    status,
+                                    userNames: [name],
+                                    startAt: startAt ? new Date(startAt.format()).getTime() : null,
+                                });
+
+                                const index = userInfoData.findIndex((userInfo) => userInfo.name === name);
+                                const selectedUserCourse = userInfoData[index].userCourses.find(
+                                    (userCourse) => userCourse.courseInfo.hash === courseHashs[0],
+                                );
+                                selectedUserCourse.status = status;
+                                selectedUserCourse.startAt = startAt ? startAt.format() : null;
+                                setUserInfoData([...userInfoData]);
+                                message.success('修改成功');
+                            }
+
+                            userCourseForm.resetFields();
+                            setUserCourseFormData({ ...userCourseFormData, modalVisible: false });
+                        }}
+                    >
+                        <Form.Item
+                            name="courseHashs"
+                            label="开通课程"
+                            rules={[{ required: true, message: '请选择要开通的课程' }]}
+                        >
+                            <Select
+                                placeholder="请选择要开通课程"
+                                mode="multiple"
+                                disabled={userCourseFormData.type === 'EDIT'}
+                            >
+                                {courseList.map((course) => {
+                                    return (
+                                        <Option key={course.hash} value={course.hash}>
+                                            {course.name}
+                                        </Option>
+                                    );
+                                })}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="status"
+                            label="激活状态"
+                            rules={[{ required: true, message: '请选择激活状态' }]}
+                        >
+                            <Radio.Group>
+                                {Object.keys(USER_COURSE_STATUSES).map((key) => {
+                                    return (
+                                        <Radio
+                                            key={USER_COURSE_STATUSES[key].value}
+                                            value={USER_COURSE_STATUSES[key].value}
+                                        >
+                                            {USER_COURSE_STATUSES[key].name}
+                                        </Radio>
+                                    );
+                                })}
+                            </Radio.Group>
+                        </Form.Item>
+                        <Form.Item name="startAt" label="开课日期">
+                            <DatePicker showTime placeholder="请选择开课日期"></DatePicker>
                         </Form.Item>
                     </Form>
                 </Modal>
