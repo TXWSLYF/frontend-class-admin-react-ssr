@@ -1,8 +1,8 @@
 import css from './index.module.scss';
 import AdminPage from '../../components/AdminPage';
 import { Form, Input, Button, DatePicker, Select, Table, Tag, Pagination, Modal, Radio, message } from 'antd';
-import { useState, useEffect } from 'react';
-import { getWholeCourseList, getUserInfo, editUserInfo } from '../../api/userManage';
+import { useState } from 'react';
+import { getUserInfo, editUserInfo, VIEW_USERINFO_URL, GET_WHOLE_COURSE_LIST_URL } from '../../api/userManage';
 import {
     USER_COUPON_STATUSES,
     getuserCouponStatusName,
@@ -10,7 +10,7 @@ import {
     getuserCourseStatusName,
 } from '../../common/constant';
 import { GetServerSidePropsContext } from 'next';
-import { getCouponList, userAddCoupon } from '../../api/coupon';
+import { userAddCoupon, GET_COUPON_LIST_URL } from '../../api/coupon';
 import fetchServer from '../../util/fetchServer';
 import Head from 'next/head';
 import { addUserCourse, editUserCourse } from '../../api/userCourse';
@@ -29,16 +29,26 @@ type searchFormData = {
     courseHashs: Array<string>;
 };
 
-export default function UserManage() {
+export default function UserManage({
+    initUserInfoRes,
+    courseList,
+    couponList,
+}: {
+    initUserInfoRes: IViewUserInfoResData;
+    courseList: Array<ICourseItem>;
+    couponList: Array<ICouponInfo>;
+}) {
     const [form] = Form.useForm();
     const [couponForm] = Form.useForm();
     const [editForm] = Form.useForm();
     const [userCourseForm] = Form.useForm();
 
-    const [courseList, setCourseList] = useState<Array<ICourseItem>>([]);
-    const [userInfoData, setUserInfoData] = useState<Array<IViewUserInfoResDataItem>>([]);
-    const [paginationData, setPaginationData] = useState<IPaginationData>({ total: 0, currentPage: 1, pageSize: 20 });
-    const [couponList, setCouponList] = useState<Array<ICouponInfo>>([]);
+    const [userInfoData, setUserInfoData] = useState<Array<IViewUserInfoResDataItem>>(initUserInfoRes.rows);
+    const [paginationData, setPaginationData] = useState<IPaginationData>({
+        total: initUserInfoRes.count,
+        currentPage: 1,
+        pageSize: 20,
+    });
     const [couponModalVisible, setCouponModalVisible] = useState(false);
     const [selectedUserInfo, setSelectedUserInfo] = useState<IViewUserInfoResDataItem>();
     const [editModalVisible, setEditModalVisible] = useState(false);
@@ -263,16 +273,6 @@ export default function UserManage() {
         setPaginationData(Object.assign(paginationData, { currentPage: page }));
         form.submit();
     };
-
-    useEffect(() => {
-        (async () => {
-            const courseList = await getWholeCourseList();
-            setCourseList(courseList);
-            form.submit();
-            const couponList = await getCouponList();
-            setCouponList(couponList);
-        })();
-    }, []);
 
     const { currentPage, total, pageSize } = paginationData;
 
@@ -535,11 +535,35 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         await fetchServer.get('/admin/user', {
             headers: context.req.headers,
         });
+        const [initUserInfoRes, courseList, couponList] = await Promise.all([
+            fetchServer.post(
+                VIEW_USERINFO_URL,
+                {
+                    nickname: '',
+                    remark: '',
+                    currentPage: 1,
+                    pageSize: 20,
+                },
+                {
+                    headers: context.req.headers,
+                },
+            ),
+            fetchServer.get(GET_WHOLE_COURSE_LIST_URL, {
+                headers: context.req.headers,
+            }),
+            fetchServer.get(GET_COUPON_LIST_URL, {
+                headers: context.req.headers,
+            }),
+        ]);
+
+        const props = { initUserInfoRes, courseList, couponList };
+
+        return {
+            props,
+        };
     } catch (error) {
         context.res.statusCode = 302;
         context.res.setHeader('location', '/login');
+        return { props: {} };
     }
-    return {
-        props: {},
-    };
 }

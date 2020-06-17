@@ -3,7 +3,8 @@ import fetch from '../util/fetch';
 /**
  * @description 获取优惠券列表
  */
-export const getCouponList = () => fetch.get<Array<ICouponInfo>>('/admin/couponList');
+export const GET_COUPON_LIST_URL = '/admin/couponList';
+export const getCouponList = () => fetch.get<Array<ICouponInfo>>(GET_COUPON_LIST_URL);
 
 /**
  * @description 用户添加优惠券
