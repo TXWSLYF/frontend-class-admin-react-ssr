@@ -60,7 +60,7 @@ export default function AgreementModel({ close, visible }: { close: () => void; 
                     close();
                 }}
             >
-                <img src="//static.xhxly.cn//close49jfj84j548jfhdhf48.png" />
+                <img src="//static.xhxly.cn/close49jfj84j548jfhdhf48.png" />
             </div>
         </div>
     );
