@@ -162,7 +162,7 @@ const GoodDetail = (props: {
                             </div>
                             <div className={css['price-container--original']}>
                                 <p>限时优惠</p>
-                                <p style={{ margin: '0' }}> 原价 {originPrice / 100}</p>
+                                <p style={{ margin: '0' }}> 指导价 {originPrice / 100}</p>
                             </div>
                         </div>
                         <div className={css['signup-btn-container']}>
