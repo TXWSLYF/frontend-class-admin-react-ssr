@@ -158,8 +158,8 @@ const GoodDetail = (props: {
             </main>
 
             <div className={css['count-down']}>
-                <div style={{ fontSize: '1vw' }}>优惠倒计时</div>
-                <div style={{ fontSize: '1vw' }}>{countDown}</div>
+                <div style={{ fontSize: '2vw' }}>优惠倒计时</div>
+                <div style={{ fontSize: '2vw' }}>{countDown}</div>
             </div>
 
             <footer ref={footerRef}>
