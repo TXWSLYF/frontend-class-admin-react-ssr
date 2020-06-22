@@ -6,6 +6,18 @@
         width: 100%;
     }
 
+    .count-down {
+        position: fixed;
+        right: 0px;
+        bottom: 25vw;
+        padding: 2vw;
+        background: #fa709a;
+        color: white;
+        border-top-left-radius: 2vw;
+        border-bottom-left-radius: 2vw;
+        text-align: center;
+    }
+
     .faq {
         margin: 4vw 4vw;
 

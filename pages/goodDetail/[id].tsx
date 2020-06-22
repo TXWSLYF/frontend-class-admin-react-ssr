@@ -7,6 +7,7 @@ import { GOOD_INFO_URL, IS_PURCHASED_GOOD_URL, checkIsPurchasedGood } from '../.
 import { USER_COUPON_INFO_URL } from '../../api/coupon';
 import AgreementModel from '../../components/AgreementModel';
 import React, { useState, useEffect } from 'react';
+import { showtime } from '../../util/util';
 
 const GoodDetail = (props: {
     userInfo: IUserInfo;
@@ -40,6 +41,8 @@ const GoodDetail = (props: {
     const gotoCourseGuide = () => {
         window.location.href = '/courseGuide.html';
     };
+
+    const [countDown, setCountDown] = useState(showtime());
 
     const handleSignUp = async () => {
         if (!isAgreement) {
@@ -84,6 +87,10 @@ const GoodDetail = (props: {
 
     useEffect(() => {
         setMainHeight();
+
+        setInterval(() => {
+            setCountDown(showtime());
+        }, 1000);
     }, [isAgreement]);
 
     return (
@@ -149,6 +156,11 @@ const GoodDetail = (props: {
                     </a>
                 </div>
             </main>
+
+            <div className={css['count-down']}>
+                <div style={{ fontSize: '1vw' }}>优惠倒计时</div>
+                <div style={{ fontSize: '1vw' }}>{countDown}</div>
+            </div>
 
             <footer ref={footerRef}>
                 {!isPurchasedGood && (
