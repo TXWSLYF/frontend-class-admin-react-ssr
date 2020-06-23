@@ -176,7 +176,7 @@ const GoodDetail = (props: {
                                 <p>
                                     优惠截止日期
                                     <br />
-                                    6月30号
+                                    6月27号
                                 </p>
                                 <p style={{ margin: '0' }}> 指导价 {originPrice / 100}</p>
                             </div>
