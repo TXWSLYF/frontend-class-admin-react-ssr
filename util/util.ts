@@ -1,4 +1,4 @@
-export const showtime = (endDate = '2020/6/25') => {
+export const showtime = (endDate = '2020/6/27') => {
     const nowtime = new Date(), //获取当前时间
         endtime = new Date(endDate); //定义结束时间
     const lefttime = endtime.getTime() - nowtime.getTime(), //距离结束时间的毫秒数
