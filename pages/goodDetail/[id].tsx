@@ -45,6 +45,8 @@ const GoodDetail = (props: {
     const [countDown, setCountDown] = useState(showtime());
 
     const handleSignUp = async () => {
+        alert('报名通道已关闭！');
+        return;
         if (!isAgreement) {
             alert('请先同意报名须知');
             return;
