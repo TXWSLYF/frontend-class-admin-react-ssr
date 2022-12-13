@@ -11,7 +11,7 @@
     "dependencies": {
         "antd": "^4.3.2",
         "axios": "^0.19.2",
-        "express": "^4.17.1",
+        "express": "^4.17.3",
         "next": "9.4.4",
         "normalize.css": "^8.0.1",
         "react": "16.13.1",
